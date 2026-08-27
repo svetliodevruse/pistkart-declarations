@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Декларация-Съгласие за обработване на лични данни</title>
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --border-color: #ccc;
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Segoe UI', sans-serif;
+            line-height: 1.5;
+            color: #333;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .declaration-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 40px;
+            border-top: 5px solid var(--primary-color);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-top: 0;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 22px;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            font-size: 15px;
+            font-weight: normal;
+            margin-bottom: 0px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .dots {
+            border-bottom: 1px dotted #666;
+            display: inline-block;
+            min-width: 150px;
+        }
+
+        .field-value {
+            font-weight: bold;
+            padding: 0 5px;
+        }
+
+        .field-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .field-row > div {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .items-list {
+            margin-top: 0px;
+        }
+
+        .item {
+            margin-bottom: 0px;
+            font-size: 12px;
+            text-align: justify;
+            text-indent: 20px;
+        }
+
+        .signature-section {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 14px;
+        }
+
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-line {
+            border-bottom: 1px solid #000;
+            width: 200px;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        @media print {
+            body {
+                background-color: #fff;
+                padding: 0;
+            }
+            .declaration-card {
+                box-shadow: none;
+                padding: 0;
+                border-top: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="declaration-card">
+        <h1>ДЕКЛАРАЦИЯ-СЪГЛАСИЕ</h1>
+        <h2>за обработване на лични данни за целите на сключване и изпълнение на договор за предоставяне на картинг услуги</h2>
+        <div class="subtitle">
+            с информация по чл. 13 от Общия регламент относно защитата на данните<br>
+            (Регламент (ЕС) 2016/679)
+        </div>
+
+        <!-- Данни за Декларатора / Водача -->
+        <div class="form-group">
+            Долуподписаният/ата <span class="field-value"><?= data.fullName ?></span>,
+        </div>
+        <div class="field-row">
+            <div style="flex: 2;">с адрес: <span class="field-value"><?= data.address ?></span></div>
+            <div style="flex: 2;">дата на раждане: <span class="field-value"><?= data.birthDate ?></span>,</div>
+            <div style="flex: 2;">телефон: <span class="field-value"><?= data.phone ?></span>,</div>
+        </div>
+        <div class="form-group">
+            наричан/а по-долу за краткост "ПИЛОТА"
+        </div>
+
+        <!-- Данни за непълнолетно дете (показват се само ако са въведени) -->
+        <div class="form-group" style="margin: 20px 0 8px 0;">
+            или в качеството си на родител/настойник/попечител на<br>
+            <small><em>/премахва се излишното/</em></small>
+        </div>
+
+        <div class="form-group">
+            Име на детето: <span class="field-value"><?= data.childName ?></span>
+        </div>
+        <div class="field-row">
+            <div>с адрес: <span class="field-value"><?= data.childAddress ?></span></div>
+            <div>дата на раждане: <span class="field-value"><?= data.childBirthDate ?></span></div>
+        </div>
+
+        <h2 style="margin-top: 30px; margin-bottom: 20px; font-weight: bold;">ДЕКЛАРИРАМ, ЧЕ:</h2>
+
+        <div class="items-list">
+            <div class="item">
+                Предоставям доброволно и свободно горепосочените лични данни – мои и на детето ми, в качеството ми на негов родител/настойник, като давам съгласието си същите да бъдат обработвани и съхранявани от администратора на лични данни – „Пист Карт“ ЕООД гр. Русе за целите на предоставяне на картинг услуги на Картинг Писта гр. Русе, включително и за целта на администратора да съхранява личните данни, свързани и/или отнасящи се до подписаната от мен декларация за проведен инструктаж относно правилата за безопасност и ползване на картове, както и нормите на поведение на Пистата.
+            </div>
+
+            <div class="item">
+                Информиран/а съм за правата си да изисквам от администратора достъп до коригиране или изтриване на личните ми данни, или ограничаване на обработването им, за правото да направя възражение срещу обработването и за правото на преносимост на данните.
+            </div>
+
+            <div class="item">
+                Информиран/а съм за правото си за оттегляне на съгласието ми по всяко време, без да се засяга законосъобразността на обработването въз основа на съгласие, преди то да бъде оттеглено.
+            </div>
+
+            <div class="item">
+                Информиран/а съм за правото си за подаване на жалба до надзорен орган – Комисията за защита на личните данни за Република България.
+            </div>
+
+            <div class="item">
+                Информиран/а съм, че предоставянето на личните ми данни е изискване, необходимо за сключване и изпълнение на договора за предоставяне на картинг услуги и провеждане на инструктаж за безопасност по ползване на картинг услугите.
+            </div>
+
+            <div class="item">
+                Известно ми е, че при непредоставянето на горепосочените лични данни от моя страна, няма да е налице валиден договор за ползване на картинг услуги.
+            </div>
+
+            <div class="item">
+                Информиран съм, че администраторът не извършва автоматизирано вземане на решения, включително профилиране, по отношение на лични данни.
+            </div>
+
+            <div class="item">
+                Подписната декларация е еднократна и се отнася единствено и само за договора за предоставяне на картинг услуги, сключен в деня на подписване и проведеният във връзка с това инструктаж за безопасност. Декларацията се архивира по дата на сключване на договора и се унищожава след изтичане на предвидения за това давностен срок от пет години.
+            </div>
+
+            <div class="item">
+                Запознат/а съм, че ако желая да упражня своите права, следва да адресирам искането си до „Пист Карт“ ЕООД с ЕИК 203173461, със седалище и адрес на управление: гр. Русе, ул. „Захари Стоянов“ № 11, вх. 2, ет. 4, представлявано от управителя Симеон Петров Симеонов.
+            </div>
+        </div>
+
+        <!-- Подпис и дата -->
+        <div class="signature-section">
+            <div>Дата: <span class="field-value"><?= formattedToday ?></span></div>
+        
+            <div class="signature-box">
+                <div style="margin-top: 5px; text-align: right;">
+                    <? if (data.signature) { ?>
+                        <img src="<?!= data.signature ?>" style="height: 50px; max-width: 200px; display: inline-block;" />
+                    <? } ?>
+                </div>
+                <div>Подпис: ___________________</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

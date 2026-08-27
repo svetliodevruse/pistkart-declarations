@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Декларация - Първоначален инструктаж</title>
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --border-color: #ccc;
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Segoe UI', sans-serif;
+            line-height: 1.5;
+            color: #333;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .declaration-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 40px;
+            border-top: 5px solid var(--primary-color);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-top: 0;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 22px;
+            letter-spacing: 1px;
+            margin-bottom: 0px;
+        }
+
+        h2 {
+            font-size: 16px;
+            font-weight: normal;
+            margin-bottom: 0px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-style: italic;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .dots {
+            border-bottom: 1px dotted #666;
+            display: inline-block;
+            min-width: 150px;
+        }
+
+        .field-value {
+            font-weight: bold;
+            padding: 0 5px;
+        }
+
+        .field-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 5px;
+        }
+
+        .field-row > div {
+            flex: 1;
+            min-width: 200px;
+            font-size: 12px;
+        }
+
+        .items-list {
+            margin-top: 0px;
+        }
+
+        .item {
+            margin-bottom: 0px;
+            font-size: 12px;
+            text-align: left;
+        }
+
+        .flag-icon {
+            font-size: 16px;
+            margin-right: 5px;
+        }
+
+        ul.sub-list {
+            list-style-type: disc;
+            padding-left: 25px;
+            margin-top: 0px;
+            margin-bottom: 0px;
+            font-style: italic;
+        }
+
+        .signature-section {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 14px;
+        }
+
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-line {
+            border-bottom: 1px solid #000;
+            width: 200px;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        @media print {
+            body {
+                background-color: #fff;
+                padding: 0;
+            }
+            .declaration-card {
+                box-shadow: none;
+                padding: 0;
+                border-top: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="declaration-card">
+        <h1>ДЕКЛАРАЦИЯ</h1>
+        <h2>За проведен първоначален инструктаж</h2>
+        <div class="subtitle">/тези данни няма да бъдат използвани за търговски или други цели/</div>
+
+        <!-- Данни за Декларатора / Водача -->
+        <div class="form-group">
+            <strong>Име (водач/родител/настойник):</strong> 
+            <span class="field-value"><?= data.fullName ?></span>
+        </div>
+        <div class="field-row">
+            <div><strong>Адрес:</strong> <span class="field-value"><?= data.address ?></span></div>
+            <div><strong>тел.:</strong> <span class="field-value"><?= data.phone ?></span></div>
+        </div>
+        <div class="field-row">
+            <div><strong>Дата на раждане:</strong> <span class="field-value"><?= data.birthDate ?></span></div>
+            <div><strong>e-mail:</strong> <span class="field-value"><?= data.email ?></span></div>
+        </div>
+
+        <!-- Данни за непълнолетно дете (ако са попълнени) -->
+        <div style="margin-top: 15px; margin-bottom: 10px; font-size: 12px;"><em>За непълнолетни водачи/деца под 18 год.</em></div>
+
+        <div class="form-group">
+            <strong>Име на детето:</strong> <span class="field-value"><?= data.childName ?></span>
+        </div>
+        <div class="field-row">
+            <div><strong>Дата на раждане:</strong> <span class="field-value"><?= data.childBirthDate ?></span></div>
+            <div><strong>Адрес:</strong> <span class="field-value"><?= data.childAddress ?></span></div>
+        </div>
+
+        <!-- Правила и инструктаж -->
+        <div class="items-list">
+            <div class="item">
+                <span class="flag-icon">🏁</span> <strong>1.</strong> Във връзка с безопасността на всеки пилот в сесията/състезанието може да бъде прекратено, ако:
+                <ul class="sub-list">
+                    <li><strong>използвате едновременно газ и спирачка;</strong></li>
+                    <li><strong>умишлено удряте друг карт;</strong></li>
+                    <li><strong>умишлено изчаквате изостанал карт;</strong></li>
+                    <li><strong>неволно или умишлено излизате от трасето повече от веднъж, движение в обратна посока;</strong></li>
+                    <li><strong>слизане от карта по време на течаща сесия.</strong></li>
+                </ul>
+            </div>
+
+            <div class="item">
+                <span class="flag-icon">🏁</span> <strong>2.</strong> При невъзможност за потегляне пилотът е длъжен да сигнализира за инцидента с високо вдигната ръка и без да напуска карта да изчака съдействие от упълномощените за това служители на КАРТИНГ ПИСТАТА.
+            </div>
+
+            <div class="item">
+                <span class="flag-icon">🏁</span> <strong>3.</strong> Задължително носете боне и предпазен шлем през цялото време докато карате картинг.
+            </div>
+
+            <div class="item">
+                <span class="flag-icon">🏁</span> <strong>4.</strong> Пилотът/долуподписаният се информира, че по време на пилотиране не се носят отворени дрехи, т.е. такива, които да се „веят" от вятъра. Косата също трябва да бъде прибрана под предпазният шлем, който е задължително закопчан.
+            </div>
+
+            <div class="item">
+                <span class="flag-icon">🏁</span> <strong>5.</strong> Пилотът/долуподписаният е длъжен да следва инструкциите на КАРТИНГ ПИСТАТА и нейният персонал. В противен случай пилотът може да бъде отстранен от сесията/състезанието без да му бъдат възстановени платените суми.
+            </div>
+
+            <div class="item">
+                <span class="flag-icon">🏁</span> <strong>6.</strong> Пилотът/долуподписаният участва изцяло на своя отговорност и носи гражданска и наказателна отговорност за наранявания на хора и увреждане на имущество, причинени от карта, управляван от него.
+            </div>
+
+            <div class="item">
+                <span class="flag-icon">🏁</span> <strong>7.</strong> Пилотът/долуподписаният гарантира, че към момента се намира в добро физическо и психическо здраве и не страда от заболявания, за които е противопоказано шофиране и физическо натоварване, съизмеримо с това, да управлява карт.
+            </div>
+
+            <div class="item">
+                <span class="flag-icon">🏁</span> <strong>8.</strong> Пилотът/долуподписаният няма право да предявява искове за щети срещу организатора, оператора или техните представители, освен ако щетата не възниква в резултат на умишлена или груба небрежност от страна на организатора, оператора или техните представители. Същото важи за щети, понесени от пилота/долуподписания в следствие на поведението на друг водач.
+            </div>
+
+            <div class="item">
+                <span class="flag-icon">🏁</span> <strong>9.</strong> Пилотът/долуподписаният се информира, че задвижващия механизъм е разположен отзад, в дясната част на карта/от дясно на седалката/ и че той не трябва да бъде докосван поради риск от изгаряния.
+            </div>
+
+            <div class="item">
+                <span class="flag-icon">🏁</span> <strong>10.</strong> Не се разрешава управление на картинг след употреба на упойващи и наркотични вещества. Строго се забранява управлението на карт с дъвка, бонбони и други неща в устата.
+            </div>
+        </div>
+
+        <!-- Подпис и дата -->
+        <div class="signature-section">
+            <div>Дата: <span class="field-value"><?= formattedToday ?></span></div>
+        
+            <div class="signature-box">
+                <div style="margin-top: 5px; text-align: right;">
+                    <? if (data.signature) { ?>
+                        <img src="<?!= data.signature ?>" style="height: 50px; max-width: 200px; display: inline-block;" />
+                    <? } ?>
+                </div>
+                <div>Подпис: ___________________</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

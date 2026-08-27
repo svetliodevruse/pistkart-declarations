@@ -13,6 +13,22 @@
     p.subtitle { text-align: center; color: #aaa; font-size: 13px; margin-bottom: 20px; }
     .back-btn { display: inline-block; color: #ffc800; text-decoration: none; font-size: 13px; font-weight: bold; margin-bottom: 15px; padding: 6px 12px; background: #242429; border: 1px solid #444; border-radius: 6px; }
     .section-head { background: #28282e; padding: 10px; font-size: 13px; font-weight: bold; color: #ffc800; border-left: 4px solid #e50914; margin: 18px 0 10px 0; }
+    
+    .declaration-text-box {
+      max-height: 220px;
+      overflow-y: auto;
+      background-color: #ffffff !important;
+      color: #111111 !important;
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid #ffc800;
+      margin-bottom: 15px;
+      font-size: 11px;
+      line-height: 1.4;
+      -webkit-overflow-scrolling: touch;
+    }
+    .declaration-text-box * { color: #111111 !important; }
+
     .form-group { margin-bottom: 12px; }
     label { display: block; margin-bottom: 4px; color: #ddd; font-size: 13px; font-weight: bold; }
     label.req::after { content: " *"; color: #e50914; }
@@ -34,6 +50,10 @@
     <p class="subtitle">Попълнете данните на телефона си</p>
 
     <form id="mainForm">
+      
+      <div class="section-head">Текст на декларацията (Преглед)</div>
+      <div class="declaration-text-box" id="declarationPreview">Зареждане на текста...</div>
+
       <div class="section-head">1. Данни за Декларатора / Водача</div>
       <div class="form-group"><label class="req">Трите имена</label><input type="text" id="fullName" required placeholder="Иван Иванов Иванов"></div>
       <div class="form-group"><label class="req">Дата на раждане</label><input type="date" id="birthDate" required min="1920-01-01"></div>
@@ -66,14 +86,79 @@
   </div>
 
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxhZ1RppgkpBh0AhbNDojtX73UetLIs4Zbkt-Kx_if6FcxrI5HHOZeoxeNx2nKucuZs/exec"; // Напр. https://script.google.com/macros/s/.../exec
+    const GAS_URL = "ТУК_ПОСТАВЕТЕ_ВАШИЯ_GOOGLE_SCRIPT_URL"; 
     
     const urlParams = new URLSearchParams(window.location.search);
     const docType = urlParams.get('type') || 'initial_briefing';
     const todayStr = new Date().toISOString().split('T')[0];
+    
+    let rawTemplateText = "";
 
     document.getElementById('birthDate').max = todayStr;
 
+    function formatDate(dStr) {
+      if (!dStr) return "";
+      const p = dStr.split("-");
+      return p.length === 3 ? `${p[2]}.${p[1]}.${p[0]}` : dStr;
+    }
+
+    // 1. ДИНАМИЧНО ЗАРЕЖДАНЕ НА ФАЙЛА ОТ ПАПКА templates/
+    fetch(`templates/declaration_${docType}.html`)
+      .then(res => res.text())
+      .then(templateHtml => {
+        rawTemplateText = templateHtml;
+        document.getElementById('declarationPreview').innerHTML = renderTemplate(rawTemplateText, {});
+      })
+      .catch(err => {
+        document.getElementById('declarationPreview').innerHTML = "<p style='color:#aaa;'>Грешка при зареждане на бланката.</p>";
+      });
+
+    // Функция за парсиране и заместване на <?= data.fieldName ?>
+    function renderTemplate(template, d) {
+      let html = template;
+      
+      const signImg = d.signature ? `<img src="${d.signature}" style="height:50px; max-width:200px; display:inline-block;" />` : '';
+
+      // Заместване на основните полета
+      html = html.replace(/<\?!=\s*data\.signature\s*\?>/g, signImg);
+      html = html.replace(/<\?=\s*formattedToday\s*\?>/g, formatDate(todayStr));
+      html = html.replace(/<\?=\s*data\.fullName\s*\?>/g, d.fullName || '...................');
+      html = html.replace(/<\?=\s*data\.birthDate\s*\?>/g, formatDate(d.birthDate) || '...................');
+      html = html.replace(/<\?=\s*data\.address\s*\?>/g, d.address || '...................');
+      html = html.replace(/<\?=\s*data\.phone\s*\?>/g, d.phone || '...................');
+      html = html.replace(/<\?=\s*data\.email\s*\?>/g, d.email || '...................');
+      html = html.replace(/<\?=\s*data\.childName\s*\?>/g, d.childName || '...................');
+      html = html.replace(/<\?=\s*data\.childBirthDate\s*\?>/g, formatDate(d.childBirthDate) || '...................');
+      html = html.replace(/<\?=\s*data\.childAddress\s*\?>/g, d.childAddress || '...................');
+      html = html.replace(/<\?=\s*data\.city\s*\?>/g, d.city || '...................');
+      html = html.replace(/<\?=\s*data\.country\s*\?>/g, d.country || '...................');
+      html = html.replace(/<\?=\s*data\.capacity\s*\?>/g, d.capacity || '...................');
+
+      // Почистване на Google conditional скриптове за скриване/показване на подписи
+      html = html.replace(/<\?\s*if\s*\(data\.signature\)\s*\{\s*\?>/g, '');
+      html = html.replace(/<\?\s*\}\s*\?>/g, '');
+
+      // Заместване на динамичната таблица за Групи пилоти
+      if (docType === 'groups') {
+        let tableRows = "";
+        if (d.groupMembers && d.groupMembers.length) {
+          d.groupMembers.forEach((m, idx) => {
+            tableRows += `<tr><td style="text-align:center;">${idx + 1}.</td><td><strong>${m.name}</strong> ${m.birth ? `(Дата на раждане: ${formatDate(m.birth)})` : ''}</td></tr>`;
+          });
+        } else {
+          for (let i = 1; i <= 10; i++) {
+            tableRows += `<tr><td style="text-align:center;">${i}.</td><td></td></tr>`;
+          }
+        }
+        
+        // Заменяме цялото тяло на таблицата <tbody>...</tbody>
+        html = html.replace(/<tbody>[\s\S]*?<\/tbody>/gi, `<tbody>${tableRows}</tbody>`);
+      }
+
+      return html;
+    }
+
+    // Настройки на интерфейса
     if (docType === 'initial_briefing') {
       document.getElementById('docTitle').innerText = "Първоначален инструктаж";
       document.getElementById('childFields').style.display = 'block';
@@ -89,6 +174,7 @@
       }
     }
 
+    // Подпис Canvas
     const canvas = document.getElementById('signatureCanvas');
     const signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)' });
 
@@ -101,9 +187,9 @@
     }
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
-
     document.getElementById('clearBtn').addEventListener('click', () => signaturePad.clear());
 
+    // Изпращане на формата
     document.getElementById('mainForm').addEventListener('submit', function(e) {
       e.preventDefault();
       if (signaturePad.isEmpty()) { alert("Моля, положете вашия подпис!"); return; }
@@ -121,8 +207,7 @@
         });
       }
 
-      const payload = {
-        type: docType,
+      const formData = {
         fullName: document.getElementById('fullName').value,
         birthDate: document.getElementById('birthDate').value,
         address: document.getElementById('address').value,
@@ -138,10 +223,17 @@
         signature: signaturePad.toDataURL()
       };
 
+      // Генериране на завършения HTML за PDF конвертора
+      const fullHtmlForPdf = renderTemplate(rawTemplateText, formData);
+
       fetch(GAS_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          type: docType,
+          fullName: formData.fullName,
+          htmlContent: fullHtmlForPdf
+        })
       })
       .then(res => res.json())
       .then(response => {

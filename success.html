@@ -5,8 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Успешно изпращане | Картинг писта</title>
   <style>
+    html {overflow-y: scroll;}
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-    body { background-color: #0f0f10; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px 15px; }
+    body { 
+      background-color: #0f0f10 !important; 
+      color: #fff !important; 
+      display: flex; 
+      justify-content: center; 
+      padding: 20px 15px !important; /* Абсолютно идентичен отстъп с index.html */
+    }
     .card { width: 100%; max-width: 480px; background: #1a1a1e; padding: 30px 20px; border-radius: 12px; border: 2px solid #33333a; text-align: center; }
     .icon { font-size: 60px; color: #ffc800; margin-bottom: 15px; }
     h1 { color: #fff; font-size: 22px; margin-bottom: 10px; text-transform: uppercase; }
@@ -15,17 +22,17 @@
     .btn-download { background: linear-gradient(135deg, #e50914 0%, #b30000 100%); color: #fff; }
     .btn-home { background: #242429; color: #ffc800; border: 1px solid #444; }
     .brand-logo {
-      max-width: 130px; /* Регулирайте ширината според пропорциите на логото */
+      max-width: 150px;
       height: auto;
       display: block;
-      margin: 0 auto 15px auto;
+      margin: 0 auto 12px auto;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="icon">&#10004;</div>
     <img src="logo.png" alt="Pist Kart Logo" class="brand-logo">
+    <div class="icon">&#10004;</div>
     <h1>Декларацията е приета!</h1>
     <p>Документът беше успешно генериран и запазен.</p>
     <a id="downloadBtn" href="#" target="_blank" class="btn btn-download" style="display: none;">&#128190; Изтегли копие (PDF)</a>

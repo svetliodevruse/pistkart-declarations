@@ -14,11 +14,18 @@
     .btn { display: inline-block; width: 100%; padding: 14px; font-size: 15px; font-weight: bold; border-radius: 8px; text-decoration: none; margin-bottom: 12px; text-transform: uppercase; }
     .btn-download { background: linear-gradient(135deg, #e50914 0%, #b30000 100%); color: #fff; }
     .btn-home { background: #242429; color: #ffc800; border: 1px solid #444; }
+    .brand-logo {
+      max-width: 130px; /* Регулирайте ширината според пропорциите на логото */
+      height: auto;
+      display: block;
+      margin: 0 auto 15px auto;
+    }
   </style>
 </head>
 <body>
   <div class="card">
     <div class="icon">&#10004;</div>
+    <img src="logo.png" alt="Pist Kart Logo" class="brand-logo">
     <h1>Декларацията е приета!</h1>
     <p>Документът беше успешно генериран и запазен.</p>
     <a id="downloadBtn" href="#" target="_blank" class="btn btn-download" style="display: none;">&#128190; Изтегли копие (PDF)</a>

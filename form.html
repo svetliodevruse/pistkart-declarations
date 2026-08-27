@@ -19,15 +19,17 @@
       overflow-y: auto;
       background-color: #ffffff !important;
       color: #111111 !important;
-      padding: 12px;
+      padding: 14px;
       border-radius: 8px;
       border: 2px solid #ffc800;
       margin-bottom: 15px;
-      font-size: 11px;
-      line-height: 1.4;
+      font-size: 12px;
+      line-height: 1.5;
       -webkit-overflow-scrolling: touch;
     }
     .declaration-text-box * { color: #111111 !important; }
+    .declaration-text-box ol, .declaration-text-box ul { padding-left: 20px; margin-top: 6px; }
+    .declaration-text-box li { margin-bottom: 6px; }
 
     .form-group { margin-bottom: 12px; }
     label { display: block; margin-bottom: 4px; color: #ddd; font-size: 13px; font-weight: bold; }
@@ -51,8 +53,8 @@
 
     <form id="mainForm">
       
-      <div class="section-head">Текст на декларацията (Преглед)</div>
-      <div class="declaration-text-box" id="declarationPreview">Зареждане на текста...</div>
+      <div class="section-head">Правила и условия (Запознаване)</div>
+      <div class="declaration-text-box" id="declarationRulesView"></div>
 
       <div class="section-head">1. Данни за Декларатора / Водача</div>
       <div class="form-group"><label class="req">Трите имена</label><input type="text" id="fullName" required placeholder="Иван Иванов Иванов"></div>
@@ -86,13 +88,13 @@
   </div>
 
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxhZ1RppgkpBh0AhbNDojtX73UetLIs4Zbkt-Kx_if6FcxrI5HHOZeoxeNx2nKucuZs/exec"; 
+    const GAS_URL = "ТУК_ПОСТАВЕТЕ_ВАШИЯ_GOOGLE_SCRIPT_URL"; 
     
     const urlParams = new URLSearchParams(window.location.search);
     const docType = urlParams.get('type') || 'initial_briefing';
     const todayStr = new Date().toISOString().split('T')[0];
     
-    let rawTemplateText = "";
+    let rawPdfTemplate = "";
 
     document.getElementById('birthDate').max = todayStr;
 
@@ -102,43 +104,77 @@
       return p.length === 3 ? `${p[2]}.${p[1]}.${p[0]}` : dStr;
     }
 
-    // 1. ДИНАМИЧНО ЗАРЕЖДАНЕ НА ФАЙЛА ОТ ПАПКА templates/
+    // 1. ЧИСТИ ТЕКСТОВЕ С ПРАВИЛА (САМО ЗА ЧЕТЕНЕ НА ЕКРАНА)
+    const rulesTextMap = {
+      'initial_briefing': `
+        <h3 style="margin-bottom:8px;">ПРАВИЛА И ИНСТРУКТАЖ ЗА БЕЗОПАСНОСТ</h3>
+        <ol>
+          <li>Във връзка с безопасността сесията/състезанието може да бъде прекратено, ако използвате едновременно газ и спирачка, умишлено удряте друг карт, излизате от трасето или слизате от карта по време на течаща сесия.</li>
+          <li>При невъзможност за потегляне пилотът е длъжен да сигнализира с високо вдигната ръка и да изчака съдействие без да напуска карта.</li>
+          <li>Задължително носете боне и предпазен шлем през цялото време.</li>
+          <li>Не се носят отворени дрехи, които да се веят. Косата трябва да бъде прибрана под предпазния шлем.</li>
+          <li>Длъжни сте да следвате всички инструкции на персонала на пистата.</li>
+          <li>Участвате изцяло на своя отговорност за наранявания и имуществени вреди.</li>
+          <li>Гарантирате, че се намирате в добро физическо и психическо здраве.</li>
+          <li>Задвижващият механизъм е отзад вдясно – не го докосвайте поради риск от изгаряния.</li>
+          <li>Забранено е управлението след употреба на алкохол, наркотици или с дъвка/бонбон в устата.</li>
+        </ol>
+      `,
+      'gdpr': `
+        <h3 style="margin-bottom:8px;">СЪГЛАСИЕ ЗА ОБРАБОТВАНЕ НА ЛИЧНИ ДАННИ (GDPR)</h3>
+        <p>С потвърждаването на тази декларация се съгласявате със следните условия:</p>
+        <ol>
+          <li>Предоставяте доброволно личните си данни (и тези на детето си) за целите на предоставяне на картинг услуги и провеждане на инструктаж от „Пист Карт“ ЕООД.</li>
+          <li>Информирани сте за правата си на достъп, коригиране, изтриване или ограничаване на обработването на личните ви данни.</li>
+          <li>Информирани сте за правото да оттеглите съгласието си по всяко време.</li>
+          <li>Информирани сте за правото на жалба до Комисията за защита на личните данни (КЗЛД).</li>
+          <li>Предоставянето на личните данни е необходимо изискване за сключване на договора за картинг услуги.</li>
+          <li>Декларацията се архивира по дата и се съхранява за законен срок от 5 години.</li>
+        </ol>
+      `,
+      'groups': `
+        <h3 style="margin-bottom:8px;">УСЛОВИЯ И ПРАВИЛА ЗА ГРУПИ ПИЛОТИ</h3>
+        <ol>
+          <li>Участниците в групата ще карат по своя воля и са запознати с рисковете от управлението на картинг.</li>
+          <li>Давате съгласие за съхранение и обработка на личните данни на групата за срок до 10 години.</li>
+          <li>Декларирате, че всички пилоти са в перфектно здраве и нямат претърпени тежки операции или заболявания.</li>
+          <li>Всички пилоти са запознати с правилата за безопасност и светлинните знаци на пистата.</li>
+          <li>Освобождавате от отговорност собствениците и служителите на пистата за инциденти, причинени от неспазване на правилата.</li>
+          <li>Минималната възраст за каране от деца е 8 години (с минимална височина 130 см).</li>
+        </ol>
+      `
+    };
+
+    // Зареждаме чистите правила в прозореца за четене
+    document.getElementById('declarationRulesView').innerHTML = rulesTextMap[docType] || rulesTextMap['initial_briefing'];
+
+    // 2. ЗАРЕЖДАМЕ ИСТИНСКАТА БЛАНКА ОТ templates/ (САМО ЗА ГЕНЕРИРАНЕ НА PDF)
     fetch(`templates/declaration_${docType}.html`)
       .then(res => res.text())
-      .then(templateHtml => {
-        rawTemplateText = templateHtml;
-        document.getElementById('declarationPreview').innerHTML = renderTemplate(rawTemplateText, {});
-      })
-      .catch(err => {
-        document.getElementById('declarationPreview').innerHTML = "<p style='color:#aaa;'>Грешка при зареждане на бланката.</p>";
-      });
+      .then(html => { rawPdfTemplate = html; });
 
-    // Функция за парсиране и заместване на <?= data.fieldName ?>
-    function renderTemplate(template, d) {
+    // Функция за попълване на официалния PDF шаблон
+    function fillPdfTemplate(template, d) {
       let html = template;
-      
       const signImg = d.signature ? `<img src="${d.signature}" style="height:50px; max-width:200px; display:inline-block;" />` : '';
 
-      // Заместване на основните полета
       html = html.replace(/<\?!=\s*data\.signature\s*\?>/g, signImg);
       html = html.replace(/<\?=\s*formattedToday\s*\?>/g, formatDate(todayStr));
-      html = html.replace(/<\?=\s*data\.fullName\s*\?>/g, d.fullName || '...................');
-      html = html.replace(/<\?=\s*data\.birthDate\s*\?>/g, formatDate(d.birthDate) || '...................');
-      html = html.replace(/<\?=\s*data\.address\s*\?>/g, d.address || '...................');
-      html = html.replace(/<\?=\s*data\.phone\s*\?>/g, d.phone || '...................');
-      html = html.replace(/<\?=\s*data\.email\s*\?>/g, d.email || '...................');
-      html = html.replace(/<\?=\s*data\.childName\s*\?>/g, d.childName || '...................');
-      html = html.replace(/<\?=\s*data\.childBirthDate\s*\?>/g, formatDate(d.childBirthDate) || '...................');
-      html = html.replace(/<\?=\s*data\.childAddress\s*\?>/g, d.childAddress || '...................');
-      html = html.replace(/<\?=\s*data\.city\s*\?>/g, d.city || '...................');
-      html = html.replace(/<\?=\s*data\.country\s*\?>/g, d.country || '...................');
-      html = html.replace(/<\?=\s*data\.capacity\s*\?>/g, d.capacity || '...................');
+      html = html.replace(/<\?=\s*data\.fullName\s*\?>/g, d.fullName || '');
+      html = html.replace(/<\?=\s*data\.birthDate\s*\?>/g, formatDate(d.birthDate) || '');
+      html = html.replace(/<\?=\s*data\.address\s*\?>/g, d.address || '');
+      html = html.replace(/<\?=\s*data\.phone\s*\?>/g, d.phone || '');
+      html = html.replace(/<\?=\s*data\.email\s*\?>/g, d.email || '');
+      html = html.replace(/<\?=\s*data\.childName\s*\?>/g, d.childName || '');
+      html = html.replace(/<\?=\s*data\.childBirthDate\s*\?>/g, formatDate(d.childBirthDate) || '');
+      html = html.replace(/<\?=\s*data\.childAddress\s*\?>/g, d.childAddress || '');
+      html = html.replace(/<\?=\s*data\.city\s*\?>/g, d.city || '');
+      html = html.replace(/<\?=\s*data\.country\s*\?>/g, d.country || '');
+      html = html.replace(/<\?=\s*data\.capacity\s*\?>/g, d.capacity || '');
 
-      // Почистване на Google conditional скриптове за скриване/показване на подписи
       html = html.replace(/<\?\s*if\s*\(data\.signature\)\s*\{\s*\?>/g, '');
       html = html.replace(/<\?\s*\}\s*\?>/g, '');
 
-      // Заместване на динамичната таблица за Групи пилоти
       if (docType === 'groups') {
         let tableRows = "";
         if (d.groupMembers && d.groupMembers.length) {
@@ -150,8 +186,6 @@
             tableRows += `<tr><td style="text-align:center;">${i}.</td><td></td></tr>`;
           }
         }
-        
-        // Заменяме цялото тяло на таблицата <tbody>...</tbody>
         html = html.replace(/<tbody>[\s\S]*?<\/tbody>/gi, `<tbody>${tableRows}</tbody>`);
       }
 
@@ -223,8 +257,8 @@
         signature: signaturePad.toDataURL()
       };
 
-      // Генериране на завършения HTML за PDF конвертора
-      const fullHtmlForPdf = renderTemplate(rawTemplateText, formData);
+      // Генерираме оригиналната бланка за PDF документа
+      const fullHtmlForPdf = fillPdfTemplate(rawPdfTemplate, formData);
 
       fetch(GAS_URL, {
         method: 'POST',

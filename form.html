@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Формуляр за попълване | Картинг писта</title>
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background-color: #0f0f10; color: #fff; display: flex; justify-content: center; padding: 15px 10px; }
+    .container { width: 100%; max-width: 550px; background: #1a1a1e; padding: 20px; border-radius: 12px; border: 2px solid #33333a; }
+    h1 { text-align: center; color: #ffc800; font-size: 20px; margin-bottom: 5px; text-transform: uppercase; }
+    p.subtitle { text-align: center; color: #aaa; font-size: 13px; margin-bottom: 20px; }
+    .back-btn { display: inline-block; color: #ffc800; text-decoration: none; font-size: 13px; font-weight: bold; margin-bottom: 15px; padding: 6px 12px; background: #242429; border: 1px solid #444; border-radius: 6px; }
+    .section-head { background: #28282e; padding: 10px; font-size: 13px; font-weight: bold; color: #ffc800; border-left: 4px solid #e50914; margin: 18px 0 10px 0; }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; margin-bottom: 4px; color: #ddd; font-size: 13px; font-weight: bold; }
+    label.req::after { content: " *"; color: #e50914; }
+    input, select { width: 100%; padding: 11px; background: #242429; border: 1px solid #444; border-radius: 8px; color: #fff; font-size: 15px; }
+    .canvas-wrapper { position: relative; width: 100%; height: 160px; background: #fff; border-radius: 8px; touch-action: none; margin-top: 5px; border: 2px solid #ffc800; }
+    canvas { width: 100%; height: 100%; border-radius: 6px; }
+    .signature-tools { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 20px 0; }
+    .clear-btn { background: #242429; color: #ccc; border: 1px solid #444; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+    .submit-btn { width: 100%; background: linear-gradient(135deg, #e50914 0%, #b30000 100%); color: #fff; border: none; padding: 16px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; text-transform: uppercase; }
+    .submit-btn:disabled { background: #555; }
+    .group-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="index.html" class="back-btn">&#8592; Към началото</a>
+    <h1 id="docTitle">Декларация за безопасност</h1>
+    <p class="subtitle">Попълнете данните на телефона си</p>
+
+    <form id="mainForm">
+      <div class="section-head">1. Данни за Декларатора / Водача</div>
+      <div class="form-group"><label class="req">Трите имена</label><input type="text" id="fullName" required placeholder="Иван Иванов Иванов"></div>
+      <div class="form-group"><label class="req">Дата на раждане</label><input type="date" id="birthDate" required min="1920-01-01"></div>
+      <div class="form-group"><label>Адрес</label><input type="text" id="address" placeholder="гр. Русе, ул. Примерна 10"></div>
+      <div class="form-group"><label>Телефон</label><input type="tel" id="phone" placeholder="0888 888 888"></div>
+      <div class="form-group"><label>Имейл</label><input type="email" id="email" placeholder="ivan@example.com"></div>
+
+      <div id="childFields" style="display: none;">
+        <div class="section-head">2. Данни за дете / непълнолетен пилот</div>
+        <div class="form-group"><label>Име на детето</label><input type="text" id="childName"></div>
+        <div class="form-group"><label>Дата на раждане на детето</label><input type="date" id="childBirthDate"></div>
+        <div class="form-group"><label>Адрес на детето</label><input type="text" id="childAddress"></div>
+      </div>
+
+      <div id="groupFields" style="display: none;">
+        <div class="section-head">2. Допълнителни данни за групата</div>
+        <div class="form-group"><label>Град / Държава</label><div style="display: flex; gap: 8px;"><input type="text" id="city" placeholder="Град"><input type="text" id="country" value="България"></div></div>
+        <div class="form-group"><label class="req">В качеството си на</label>
+          <select id="capacity"><option value="" disabled selected>-- Изберете --</option><option value="родител">родител</option><option value="организатор">организатор</option><option value="водач на групата">водач на групата</option></select>
+        </div>
+        <div class="section-head">3. Списък на участниците в групата</div>
+        <div id="groupContainer"></div>
+      </div>
+
+      <div class="section-head">Подпис</div>
+      <div class="canvas-wrapper"><canvas id="signatureCanvas"></canvas></div>
+      <div class="signature-tools"><span style="font-size:11px; color:#888;">Подпишете с пръст</span><button type="button" class="clear-btn" id="clearBtn">Изчисти</button></div>
+      <button type="submit" class="submit-btn" id="submitBtn">Потвърди и изпрати</button>
+    </form>
+  </div>
+
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxhZ1RppgkpBh0AhbNDojtX73UetLIs4Zbkt-Kx_if6FcxrI5HHOZeoxeNx2nKucuZs/exec"; // Напр. https://script.google.com/macros/s/.../exec
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const docType = urlParams.get('type') || 'initial_briefing';
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    document.getElementById('birthDate').max = todayStr;
+
+    if (docType === 'initial_briefing') {
+      document.getElementById('docTitle').innerText = "Първоначален инструктаж";
+      document.getElementById('childFields').style.display = 'block';
+    } else if (docType === 'gdpr') {
+      document.getElementById('docTitle').innerText = "Декларация - съгласие";
+      document.getElementById('childFields').style.display = 'block';
+    } else if (docType === 'groups') {
+      document.getElementById('docTitle').innerText = "Декларация за Група Пилоти";
+      document.getElementById('groupFields').style.display = 'block';
+      const groupContainer = document.getElementById('groupContainer');
+      for (let i = 1; i <= 10; i++) {
+        groupContainer.innerHTML += `<div class="group-row"><span style="font-size:12px; padding-top:8px;">${i}.</span><input type="text" class="g-name" placeholder="Име ${i}"><input type="date" class="g-birth" style="width:140px;" max="${todayStr}"></div>`;
+      }
+    }
+
+    const canvas = document.getElementById('signatureCanvas');
+    const signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)' });
+
+    function resizeCanvas() {
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      canvas.getContext("2d").scale(ratio, ratio);
+      signaturePad.clear();
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    document.getElementById('clearBtn').addEventListener('click', () => signaturePad.clear());
+
+    document.getElementById('mainForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (signaturePad.isEmpty()) { alert("Моля, положете вашия подпис!"); return; }
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Генериране на PDF...";
+
+      let groupMembers = [];
+      if (docType === 'groups') {
+        const names = document.querySelectorAll('.g-name');
+        const births = document.querySelectorAll('.g-birth');
+        names.forEach((el, index) => {
+          if (el.value.trim() !== '') groupMembers.push({ name: el.value.trim(), birth: births[index].value });
+        });
+      }
+
+      const payload = {
+        type: docType,
+        fullName: document.getElementById('fullName').value,
+        birthDate: document.getElementById('birthDate').value,
+        address: document.getElementById('address').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        childName: document.getElementById('childName') ? document.getElementById('childName').value : '',
+        childBirthDate: document.getElementById('childBirthDate') ? document.getElementById('childBirthDate').value : '',
+        childAddress: document.getElementById('childAddress') ? document.getElementById('childAddress').value : '',
+        city: document.getElementById('city') ? document.getElementById('city').value : '',
+        country: document.getElementById('country') ? document.getElementById('country').value : '',
+        capacity: document.getElementById('capacity') ? document.getElementById('capacity').value : '',
+        groupMembers: groupMembers,
+        signature: signaturePad.toDataURL()
+      };
+
+      fetch(GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(response => {
+        if (response.status === "success") {
+          sessionStorage.setItem('pdfDownloadUrl', response.fileUrl);
+          window.location.href = "success.html";
+        } else {
+          alert("Грешка: " + response.message);
+          submitBtn.disabled = false;
+          submitBtn.innerText = "Потвърди и изпрати";
+        }
+      })
+      .catch(err => {
+        alert("Грешка при връзката със сървъра: " + err);
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Потвърди и изпрати";
+      });
+    });
+  </script>
+</body>
+</html>

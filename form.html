@@ -7,12 +7,84 @@
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-    body { background-color: #0f0f10; color: #fff; display: flex; justify-content: center; padding: 15px 10px; }
-    .container { width: 100%; max-width: 550px; background: #1a1a1e; padding: 20px; border-radius: 12px; border: 2px solid #33333a; }
-    h1 { text-align: center; color: #ffc800; font-size: 20px; margin-bottom: 5px; text-transform: uppercase; }
-    p.subtitle { text-align: center; color: #aaa; font-size: 13px; margin-bottom: 20px; }
-    .back-btn { display: inline-block; color: #ffc800; text-decoration: none; font-size: 13px; font-weight: bold; margin-bottom: 15px; padding: 6px 12px; background: #242429; border: 1px solid #444; border-radius: 6px; }
-    .section-head { background: #28282e; padding: 10px; font-size: 13px; font-weight: bold; color: #ffc800; border-left: 4px solid #e50914; margin: 18px 0 10px 0; }
+    
+    body { 
+      background-color: #0f0f10 !important; 
+      color: #fff !important; 
+      display: flex; 
+      justify-content: center; 
+      padding: 20px 12px; 
+    }
+
+    /* Плосък контейнер без сива външна рамка */
+    .container { 
+      width: 100%; 
+      max-width: 460px; 
+      background: transparent !important; 
+      border: none !important; 
+      box-shadow: none !important;
+      padding: 0 !important;
+    }
+
+    .header-box {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .brand-logo {
+      max-width: 150px;
+      height: auto;
+      display: block;
+      margin: 0 auto 12px auto;
+    }
+
+    .back-btn { 
+      display: inline-block; 
+      color: #ffc800; 
+      text-decoration: none; 
+      font-size: 12px; 
+      font-weight: bold; 
+      padding: 6px 14px; 
+      background: #1a1a1e; 
+      border: 1px solid #33333a; 
+      border-radius: 6px; 
+      margin-bottom: 15px;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .back-btn:hover { 
+      background: #242429; 
+      border-color: #ffc800; 
+    }
+
+    .brand-title { 
+      color: #ffc800; 
+      font-size: 20px; 
+      font-weight: bold; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    p.subtitle { 
+      color: #aaaaaa; 
+      font-size: 13px; 
+    }
+
+    .section-head { 
+      background: #1a1a1e; 
+      padding: 11px 14px; 
+      font-size: 13px; 
+      font-weight: bold; 
+      color: #ffc800; 
+      border-left: 5px solid #e50914; 
+      border-radius: 6px;
+      margin: 20px 0 12px 0; 
+      text-transform: uppercase;
+      border-top: 1px solid #33333a;
+      border-right: 1px solid #33333a;
+      border-bottom: 1px solid #33333a;
+    }
     
     .declaration-text-box {
       max-height: 220px;
@@ -31,32 +103,58 @@
     .declaration-text-box ol, .declaration-text-box ul { padding-left: 20px; margin-top: 6px; }
     .declaration-text-box li { margin-bottom: 6px; }
 
-    .form-group { margin-bottom: 12px; }
-    label { display: block; margin-bottom: 4px; color: #ddd; font-size: 13px; font-weight: bold; }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; margin-bottom: 5px; color: #dddddd; font-size: 13px; font-weight: bold; }
     label.req::after { content: " *"; color: #e50914; }
-    input, select { width: 100%; padding: 11px; background: #242429; border: 1px solid #444; border-radius: 8px; color: #fff; font-size: 15px; }
+    input, select { 
+      width: 100%; 
+      padding: 12px; 
+      background: #1a1a1e; 
+      border: 1px solid #33333a; 
+      border-radius: 8px; 
+      color: #fff; 
+      font-size: 15px; 
+    }
+    input:focus, select:focus {
+      border-color: #ffc800;
+      outline: none;
+    }
+
     .canvas-wrapper { position: relative; width: 100%; height: 160px; background: #fff; border-radius: 8px; touch-action: none; margin-top: 5px; border: 2px solid #ffc800; }
     canvas { width: 100%; height: 100%; border-radius: 6px; }
-    .signature-tools { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 20px 0; }
-    .clear-btn { background: #242429; color: #ccc; border: 1px solid #444; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
-    .submit-btn { width: 100%; background: linear-gradient(135deg, #e50914 0%, #b30000 100%); color: #fff; border: none; padding: 16px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; text-transform: uppercase; }
-    .submit-btn:disabled { background: #555; }
-    .group-row { display: flex; gap: 8px; margin-bottom: 8px; }
-    .brand-logo {
-      max-width: 130px; /* Регулирайте ширината според пропорциите на логото */
-      height: auto;
-      display: block;
-      margin: 0 auto 15px auto;
+    .signature-tools { display: flex; justify-content: space-between; align-items: center; margin: 8px 0 22px 0; }
+    .clear-btn { background: #1a1a1e; color: #ccc; border: 1px solid #33333a; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+    .clear-btn:hover { color: #fff; border-color: #e50914; }
+
+    .submit-btn { 
+      width: 100%; 
+      background: linear-gradient(135deg, #e50914 0%, #b30000 100%); 
+      color: #fff; 
+      border: none; 
+      padding: 16px; 
+      font-size: 16px; 
+      font-weight: bold; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
     }
+    .submit-btn:disabled { background: #555; box-shadow: none; }
+    .group-row { display: flex; gap: 8px; margin-bottom: 8px; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <a href="index.html" class="back-btn">&#8592; Към началото</a>
-    <img src="logo.png" alt="Pist Kart Logo" class="brand-logo">
-    <h1 id="docTitle">Декларация за безопасност</h1>
-    <p class="subtitle">Попълнете данните на телефона си</p>
+    
+    <!-- Шапка: Лого най-горе, бутон под него, заглавие и подзаглавие -->
+    <div class="header-box">
+      <img src="logo.png" alt="Pist Kart Extreme" class="brand-logo">
+      <a href="index.html" class="back-btn">&#8592; Към началото</a>
+      <h1 id="docTitle" class="brand-title">Декларация за безопасност</h1>
+      <p class="subtitle">Попълнете данните на телефона си</p>
+    </div>
 
     <form id="mainForm">
       
@@ -111,7 +209,7 @@
       return p.length === 3 ? `${p[2]}.${p[1]}.${p[0]}` : dStr;
     }
 
-    // 1. ЧИСТИ ТЕКСТОВЕ С ПРАВИЛА (САМО ЗА ЧЕТЕНЕ НА ЕКРАНА)
+    // ЧИСТИ ТЕКСТОВЕ С ПРАВИЛА ЗА ПРЕГЛЕД
     const rulesTextMap = {
       'initial_briefing': `
         <h3 style="margin-bottom:8px;">ПРАВИЛА И ИНСТРУКТАЖ ЗА БЕЗОПАСНОСТ</h3>
@@ -152,15 +250,12 @@
       `
     };
 
-    // Зареждаме чистите правила в прозореца за четене
     document.getElementById('declarationRulesView').innerHTML = rulesTextMap[docType] || rulesTextMap['initial_briefing'];
 
-    // 2. ЗАРЕЖДАМЕ ИСТИНСКАТА БЛАНКА ОТ templates/ (САМО ЗА ГЕНЕРИРАНЕ НА PDF)
     fetch(`templates/declaration_${docType}.html`)
       .then(res => res.text())
       .then(html => { rawPdfTemplate = html; });
 
-    // Функция за попълване на официалния PDF шаблон
     function fillPdfTemplate(template, d) {
       let html = template;
       const signImg = d.signature ? `<img src="${d.signature}" style="height:50px; max-width:200px; display:inline-block;" />` : '';
@@ -199,7 +294,6 @@
       return html;
     }
 
-    // Настройки на интерфейса
     if (docType === 'initial_briefing') {
       document.getElementById('docTitle').innerText = "Първоначален инструктаж";
       document.getElementById('childFields').style.display = 'block';
@@ -215,7 +309,6 @@
       }
     }
 
-    // Подпис Canvas
     const canvas = document.getElementById('signatureCanvas');
     const signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)' });
 
@@ -230,7 +323,6 @@
     resizeCanvas();
     document.getElementById('clearBtn').addEventListener('click', () => signaturePad.clear());
 
-    // Изпращане на формата
     document.getElementById('mainForm').addEventListener('submit', function(e) {
       e.preventDefault();
       if (signaturePad.isEmpty()) { alert("Моля, положете вашия подпис!"); return; }
@@ -264,7 +356,6 @@
         signature: signaturePad.toDataURL()
       };
 
-      // Генерираме оригиналната бланка за PDF документа
       const fullHtmlForPdf = fillPdfTemplate(rawPdfTemplate, formData);
 
       fetch(GAS_URL, {
